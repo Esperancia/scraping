@@ -1,3 +1,4 @@
 - docker-compose build
 - docker compose up -d
 - enter in mypyapp container to execute main.py python3 main.py
+- http://localhost:8081/ to explore mongodb data

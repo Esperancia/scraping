@@ -1,1 +1,6 @@
+flask
 beautifulsoup4
+pymongo
+datetime
+requests
+html5lib
