@@ -108,7 +108,7 @@ if __name__ == '__main__':
 
             #item['nom'] = pInner.find('div', attrs={'class': 'caption link-behavior'}).span.a.text
 
-            item['date']
+            item['date_creation'] = datetime.datetime.now()
             #print(item)
 
             #costcoDeals.append(item)
