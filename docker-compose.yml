@@ -11,8 +11,6 @@ services:
     volumes:
       - mongodb:/data/db
       - configdb:/data/configdb
-    networks:
-      - myscrapingapp-network
 
   mongoexpress:
     image: mongo-express
@@ -20,8 +18,6 @@ services:
     restart: always
     ports:
       - 8081:8081
-    networks:
-      - myscrapingapp-network
     depends_on:
       - mongodb
 
@@ -34,15 +30,8 @@ services:
       - "./app:/var/www/app"
     ports:
       - 5000:5000
-    networks:
-      - myscrapingapp-network
     depends_on:
       - mongodb
-
-
-networks:
-    myscrapingapp-network:
-        driver: bridge
 
 volumes:
     mongodb:
