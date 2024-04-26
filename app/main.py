@@ -1,36 +1,35 @@
 import datetime
+import requests
 
+from flask import Flask, render_template, request
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
-import requests
 from pymongo.errors import OperationFailure
 
-mongoServerUrl = 'mongodb://localhost' # if tested outside container. I am always working on docker environment for mypyapp
+mongoServerUrl = 'mongodb://localhost' # if tested outside container. mongodb://mongo from Docker
 mongoServerPort = 27017
 urlToScrap = 'https://www.costco.ca/hot-buys.html'
 
-'''
-#TODO: Add flask module for web pages
+app = Flask(__name__, template_folder='templates')
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return 'Index Page'
-'''
+    if request.method == 'POST':
+        startScraping()
+        return 'Succès'
+    else:
+        return render_template('index.html')
 
 def getHotBuyCollection():
     # if mypyapp tested directly outside python container
     clientConnection = MongoClient(mongoServerUrl, mongoServerPort)
 
-    # from docker:
-    #clientConnection = MongoClient('mongodb://mongo', mongoServerPort)
-    db = clientConnection['test_db']
-
     try:
-        # Try to validate a collection
-        validated = db.validate_collection("costco_hot_buy")
-        if validated:
-            # empty collection
-            hotBuyCollection = clientConnection.db.costco_hot_buy
-            #hotBuyCollection.delete_many({})
-
+        # Try to validate a collection, if it fails, create collection (see except)
+        clientConnection.db.validate_collection("costco_hot_buy")
+        hotBuyCollection = clientConnection.db.costco_hot_buy
+        # empty collection
+        #hotBuyCollection.delete_many({})
     except OperationFailure:
         #print("This collection doesn't exist. create it")
         hotBuyCollection = clientConnection.db.costco_hot_buy
@@ -49,7 +48,7 @@ def listItems(coll):
         print(i)
 
 
-if __name__ == '__main__':
+def startScraping():
     # Here the user agent is for Edge browser on windows 10. You can find your browser user agent from the above given link.
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246"
@@ -118,7 +117,7 @@ if __name__ == '__main__':
         except KeyError as e:
             print('insertion echouée. A vérifier: ', e)
 
-'''
+
 if __name__ == "__main__":
     app.run(debug=True)
-'''
+
